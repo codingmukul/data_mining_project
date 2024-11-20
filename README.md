@@ -77,5 +77,38 @@ The diagram illustrates the complete architecture, including data flow and integ
 - **Delta Lake**: Efficient storage and querying.
 - **GitHub**: Version control for development and collaboration.
 - **Render Cloud**: Final deployment for application integration.
+- **Backend and Frontend**: Streamlit
+
+
+## Getting Started
+
+### Prerequisites
+- Python 3.11 used
+- Setup of Pipeline as per architecture
+
+### Installation
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/codingmukul/data_mining_project
+   cd data_mining_project
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Run the Streamlit app**:
+   ```bash
+   streamlit run app.py
+   ```
+
+5. **Access the Application**:
+   Open your browser and navigate to `http://localhost:5000`.
+
+## Usage
+- **Algorithm Findings**: To find the association rules given the minimum values of support, confidence and lift.
+- **Plots and Analysis**: Some important plots related to data.
+
 
 ---
