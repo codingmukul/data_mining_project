@@ -75,14 +75,6 @@ pio.write_html(fig, file="Plots/Items Sold Per Year.html", auto_open=False)
 
 # COMMAND ----------
 
-plt.figure(figsize=(10,7))
-sns.countplot(x=pandas_df['Year'])
-plt.title('Items Sold Per Year')
-plt.xlabel('Year')
-plt.show()
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC
 # MAGIC Sales increase in 2015 as compared to 2014
@@ -94,17 +86,36 @@ plt.show()
 
 # COMMAND ----------
 
-plt.figure(figsize=(10,7))
 df_monthly = pandas_df.copy()
 df_monthly['Date'] = df_monthly['Date'].apply(lambda x: pd.to_datetime(f"{x.year}/{x.month}/{1}"))
-
-
 df_monthly = df_monthly.groupby('Date').count()['itemDescription'].reset_index()
-plt.plot(df_monthly['Date'],df_monthly['itemDescription'], color='darkblue')
-plt.xlabel('Date')
-plt.ylabel('Number of items bought')
-plt.title('Number of items sold (each month)')
-plt.show()
+
+# COMMAND ----------
+
+import plotly.graph_objects as go
+
+fig = go.Figure()
+
+fig.add_trace(go.Scatter(
+    x=df_monthly['Date'],
+    y=df_monthly['itemDescription'],
+    mode='lines',
+    line=dict(color='darkblue'),
+    name='Items Sold'
+))
+
+fig.update_layout(
+    title='Number of Items Sold (Each Month)',
+    xaxis_title='Date',
+    yaxis_title='Number of Items Bought',
+    template='plotly'
+)
+fig.show()
+
+
+# COMMAND ----------
+
+pio.write_html(fig, file="Plots/Number of Items Sold Per Month.html", auto_open=False)
 
 # COMMAND ----------
 
@@ -114,14 +125,44 @@ df_monthly = df_monthly.groupby(['Year','Month']).count().reset_index()
 d_2014 = df_monthly[df_monthly['Year'] == 2014]
 d_2015 = df_monthly[df_monthly['Year'] == 2015]
 
-plt.figure(figsize=(10,7))
-plt.plot(d_2014['Month'],d_2014['itemDescription'],label='2014')
-plt.plot(d_2015['Month'],d_2015['itemDescription'],label='2015')
-plt.title('Number of items sold (each month)')
-plt.xlabel('Month')
-plt.ylabel('item count')
-plt.legend()
-plt.show()
+# COMMAND ----------
+
+d_2014.head(12)
+
+# COMMAND ----------
+
+fig = go.Figure()
+
+fig.add_trace(go.Scatter(
+    x=d_2014['Month'],
+    y=d_2014['itemDescription'],
+    mode='lines',
+    name='2014',
+    line=dict(color='blue')  
+))
+
+fig.add_trace(go.Scatter(
+    x=d_2015['Month'],
+    y=d_2015['itemDescription'],
+    mode='lines',
+    name='2015',
+    line=dict(color='orange')  
+))
+
+fig.update_layout(
+    title='Number of Items Sold (Each Month)',
+    xaxis_title='Month',
+    yaxis_title='Item Count',
+    legend=dict(title='Year'),
+    template='plotly'
+)
+
+fig.show()
+
+
+# COMMAND ----------
+
+pio.write_html(fig, file="Plots/Number of Items Sold in 2014 and 2015.html", auto_open=False)
 
 # COMMAND ----------
 
@@ -143,13 +184,47 @@ print(f'Correlation between Sales in 2014 and 2015: {corr}')
 
 # COMMAND ----------
 
-plt.figure(figsize=(10,7))
 df_daily = pandas_df.groupby('Date').count()['itemDescription'].reset_index()
-plt.plot(df_daily['Date'],df_daily['itemDescription'], color='darkblue')
-plt.xlabel('Date')
-plt.ylabel('Number of items sold')
-plt.title('Number of items sold per day')
-plt.show()
+
+# COMMAND ----------
+
+# Create a Plotly figure
+fig = go.Figure()
+
+# Add a trace for the daily sales
+fig.add_trace(go.Scatter(
+    x=df_daily['Date'],  # Date column
+    y=df_daily['itemDescription'],  # Number of items sold
+    mode='lines',
+    line=dict(color='darkblue'),
+    name='Daily Sales'
+))
+
+# Update layout for better appearance
+fig.update_layout(
+    title='Number of Items Sold Per Day',
+    xaxis_title='Date',
+    yaxis_title='Number of Items Sold',
+    template='plotly_white',
+    xaxis=dict(
+        showgrid=True,
+        tickformat='%b %d, %Y',  # Optional: Adjust date format
+        title_font=dict(size=14),
+    ),
+    yaxis=dict(
+        showgrid=True,
+        title_font=dict(size=14),
+    ),
+    title_font=dict(size=16),
+    hovermode='x'  # Hover mode aligned to x-axis
+)
+
+# Show the figure
+fig.show()
+
+# COMMAND ----------
+
+pio.write_html(fig, file="Plots/Number of Items Sold Per Day.html", auto_open=False)
 
 # COMMAND ----------
 
@@ -182,20 +257,47 @@ df_items['Number of sales'].describe()
 
 # COMMAND ----------
 
-# Histogram for number of sales of each item
 import numpy as np
+
+# Calculate histogram data
 counts, bins = np.histogram(df_items['Number of sales'], bins=10)
 
-norm = plt.Normalize(counts.min(), counts.max())
+# Normalize counts for gradient coloring
+norm_counts = (counts - counts.min()) / (counts.max() - counts.min())
 
-plt.figure(figsize=(10, 7))
-bars = plt.bar(bins[:-1], counts, width=np.diff(bins), align='edge', color=plt.cm.plasma(norm(counts)))
+# Create a bar chart with Plotly
+fig = go.Figure()
 
-plt.xlabel('Sales Count')
-plt.ylabel('Item Count')
-plt.title("Number of Times Each Item Was Sold")
-plt.show()
+# Add bars with gradient colors
+fig.add_trace(
+    go.Bar(
+        x=bins[:-1], 
+        y=counts, 
+        marker=dict(
+            color=norm_counts, 
+            colorscale='Plasma',  # Use Plasma colormap
+            colorbar=dict(title="Normalized Counts")
+        ),
+        width=np.diff(bins),  # Set the bar width to match bin sizes
+        hovertemplate='Sales Count: %{x}<br>Item Count: %{y}<extra></extra>'
+    )
+)
 
+# Customize layout
+fig.update_layout(
+    title='Number of Times Each Item Was Sold',
+    xaxis_title='Sales Count',
+    yaxis_title='Item Count',
+    template='plotly_white'
+)
+
+# Show the plot
+fig.show()
+
+
+# COMMAND ----------
+
+pio.write_html(fig, file="Plots/Number of Times Each Item was Sold.html", auto_open=False)
 
 # COMMAND ----------
 
@@ -210,12 +312,30 @@ df_new.drop(['Date','Year','Month','Day','WeekOfYear'],axis=1,inplace=True)
 df_new.rename(columns={'itemDescription': 'Item',
                    'Member_number' : 'Number of sales'},inplace=True)
 
-plt.figure(figsize=(10,7))
-sns.barplot(data=df_new, x='Item', y='Number of sales', palette='viridis')
+# COMMAND ----------
 
-plt.title('Most Purchased Items')
-plt.xticks(rotation=45, ha='right')  # Rotate x-axis labels for readability
-plt.show()
+fig = px.bar(
+    df_new, 
+    x='Item', 
+    y='Number of sales', 
+    color='Number of sales', 
+    color_continuous_scale='viridis', 
+    title='Most Purchased Items'
+)
+
+fig.update_layout(
+    xaxis_title='Item',
+    yaxis_title='Number of Sales',
+    template='plotly_white',
+    xaxis=dict(tickangle=45)
+)
+
+fig.show()
+
+
+# COMMAND ----------
+
+pio.write_html(fig, file="Plots/Most Purchased Items.html", auto_open=False)
 
 # COMMAND ----------
 
@@ -225,12 +345,30 @@ df_cust.rename(columns={'itemDescription': 'Item Count',
                    'Member_number' : 'Customer ID'},inplace=True)
 
 df_cust['Customer ID'] = df_cust['Customer ID'].astype(str)
-plt.figure(figsize=(10,7))
-sns.barplot(data=df_cust, x='Customer ID', y='Item Count', palette='viridis')
 
-plt.title('Top Customers by Number of Items Purchased')
-plt.xticks(rotation=45, ha='right')  # Rotate x-axis labels for readability
-plt.show()
+# COMMAND ----------
+
+fig = px.bar(
+    df_cust, 
+    x='Customer ID', 
+    y='Item Count', 
+    color='Item Count', 
+    color_continuous_scale='viridis', 
+    title='Top Customers by Number of Items Purchased'
+)
+
+fig.update_layout(
+    xaxis_title='Customer ID',
+    yaxis_title='Item Count',
+    template='plotly_white',
+    xaxis=dict(tickangle=45)
+)
+
+fig.show()
+
+# COMMAND ----------
+
+pio.write_html(fig, file="Plots/Top Customers by Number of Items Purchased.html", auto_open=False)
 
 # COMMAND ----------
 
@@ -283,12 +421,24 @@ df1['Basket size'] = df1['Items_Bought'].apply(lambda x: len(x))
 
 # COMMAND ----------
 
-plt.figure(figsize=(10,7))
-df1['Basket size'].hist(alpha=0.6)
-plt.xlabel('item count')
-plt.ylabel('customer count')
-plt.title("Count of Customers vs Items in Basket")
-plt.show()
+fig = px.histogram(
+    df1, 
+    x='Basket size', 
+    title="Count of Customers vs Items in Basket"
+)
+
+fig.update_layout(
+    xaxis_title='Item Count',
+    yaxis_title='Customer Count',
+    template='plotly_white'
+)
+
+fig.show()
+
+
+# COMMAND ----------
+
+pio.write_html(fig, file="Plots/Count of Customers vs Items in Basket.html", auto_open=False)
 
 # COMMAND ----------
 
@@ -465,8 +615,8 @@ fp_rules.sort_values(by='lift',ascending=False).head(10).iloc[:,:-2][['anteceden
 
 # COMMAND ----------
 
-rules.to_csv('Apriori_rules.csv', index=False)
+rules.to_csv('Data/Apriori_rules.csv', index=False)
 
 # COMMAND ----------
 
-fp_rules.to_csv('FP_rules.csv', index=False)
+fp_rules.to_csv('Data/FP_rules.csv', index=False)
