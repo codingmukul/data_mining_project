@@ -1,5 +1,11 @@
 # Cloud Data Pipeline Architecture
 
+**Deployed at:** [https://nlpproject-pl6e.onrender.com/](https://nlpproject-pl6e.onrender.com/)
+
+**Demo at:** [Video Demo](https://drive.google.com/file/d/1oFGXaLMhgJY7y8OKO4hEWjZIrAAFM5Ly/view?usp=drive_link)
+
+**Some Other Files:** [Other Files]()
+
 ## **Overview**
 
 This pipeline integrates various cloud platforms and tools to enable efficient data processing and analysis. It is designed for seamless data transfer, transformation, and deployment for advanced analytics.
