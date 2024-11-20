@@ -14,6 +14,11 @@ from matplotlib import pyplot as plt
 
 # COMMAND ----------
 
+import plotly.express as px
+import plotly.io as pio
+
+# COMMAND ----------
+
 # Load the table into a DataFrame
 df = spark.table("Groceries_Transactions")
 
@@ -46,6 +51,27 @@ pandas_df['itemDescription'].unique().size
 # COMMAND ----------
 
 sns.set_style('darkgrid')
+
+# COMMAND ----------
+
+yearly_count = pandas_df['Year'].value_counts().reset_index()
+yearly_count.columns = ['Year', 'Count']
+yearly_count.sort_values(by='Year', inplace=True)
+
+fig = px.bar(yearly_count, x='Year', y='Count',
+             title='Items Sold Per Year',
+             labels={'Year': 'Year', 'Count': 'Number of Items Sold'},
+             text='Count')
+
+fig.update_traces(textposition='outside')
+fig.update_layout(xaxis_title='Year',
+                  yaxis_title='Number of Items Sold')
+
+fig.show()
+
+# COMMAND ----------
+
+pio.write_html(fig, file="Plots/Items Sold Per Year.html", auto_open=False)
 
 # COMMAND ----------
 
@@ -436,3 +462,11 @@ fp_rules.sort_values(by='lift',ascending=False).head(10).iloc[:,:-2][['anteceden
 # MAGIC **Conclusion:**
 # MAGIC
 # MAGIC Both the Apriori and FP-Growth algorithms yield similar results, but the Apriori algorithm generates less association rules compared to FP-Growth. However, the robustness of these rules is limited due to the low support values in the dataset, indicating that the associations identified may not be statistically significant. Consequently, while the algorithms provide insights into potential associations, the results should be interpreted with caution.
+
+# COMMAND ----------
+
+rules.to_csv('Apriori_rules.csv', index=False)
+
+# COMMAND ----------
+
+fp_rules.to_csv('FP_rules.csv', index=False)
