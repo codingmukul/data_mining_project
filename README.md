@@ -1,10 +1,9 @@
 # Cloud Data Pipeline Architecture
 
-**Deployed at:** [https://nlpproject-pl6e.onrender.com/](https://nlpproject-pl6e.onrender.com/)
+**Deployed at:** [https://dataminingproject-2lpg.onrender.com/](https://dataminingproject-2lpg.onrender.com/)
 
-**Demo at:** [Video Demo](https://drive.google.com/file/d/1oFGXaLMhgJY7y8OKO4hEWjZIrAAFM5Ly/view?usp=drive_link)
+**Demo at:** [Video Demo](https://drive.google.com/file/d/1-UPkYLRttOJ-jgy-78Voz2wV9TB2OQ9z/view?usp=sharing)
 
-**Some Other Files:** [Other Files]()
 
 ## **Overview**
 
