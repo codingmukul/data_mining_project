@@ -4,9 +4,8 @@ import plotly.express as px
 
 
 st.set_page_config(
-    page_title="Data Mining Project",  # Sets the browser tab's title
-    page_icon="📑",  # Optional: Add an emoji or icon for the browser tab
-    layout="wide"  # Expands the content to use the full width of the page
+    page_title="Data Mining Project", 
+    page_icon="📑"
 )
 
 # Load precomputed rules
