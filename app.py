@@ -5,7 +5,8 @@ import plotly.express as px
 
 st.set_page_config(
     page_title="Data Mining Project", 
-    page_icon="📑"
+    page_icon="📑",
+    layout="wide"
 )
 
 # Load precomputed rules
